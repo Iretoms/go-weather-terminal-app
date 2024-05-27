@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/joho/godotenv"
 )
 
 type Response struct {
@@ -25,8 +27,18 @@ type Condition struct {
 }
 
 func fetchWeather(l string) {
-	const apiKey = "ae6a8cca1fea4de7ada212642242605"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	apiKey := os.Getenv("API_KEY")
+	if apiKey == "" {
+		log.Fatal("API key not set")
+	}
+
 	location := l
+
 	url := fmt.Sprintf("https://api.weatherapi.com/v1/current.json?key=%v&q=%v", apiKey, location)
 
 	response, err := http.Get(url)
